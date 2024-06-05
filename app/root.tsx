@@ -1,32 +1,33 @@
+import React from 'react'
 import { type LinksFunction, json } from '@remix-run/node'
-import { Form, Links, Meta, Scripts, ScrollRestoration, Outlet, Link, useLoaderData } from "@remix-run/react";
+import { Form, Links, Meta, Scripts, ScrollRestoration, Outlet, Link, useLoaderData } from '@remix-run/react'
 
-import appStylesHref from "./app.css?url"
+import appStylesHref from './app.css?url'
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: appStylesHref },
-];
+  { rel: 'stylesheet', href: appStylesHref }
+]
 
 import { getContacts } from '../data'
 
 export const loader = async () => {
-  const contacts = await getContacts();
-  return json({ contacts });
-};
+  const contacts = await getContacts()
+  return json({ contacts })
+}
 
-export default function App() {
+export default function App () {
   const { contacts } = useLoaderData<typeof loader>()
 
   return (
     <html lang="en">
     <head>
-      <meta charSet="utf-8" />
+      <meta charSet="utf-8"/>
       <meta
         name="viewport"
         content="width=device-width, initial-scale=1"
       />
-      <Meta />
-      <Links />
+      <Meta/>
+      <Links/>
     </head>
     <body>
     <div id="sidebar">
@@ -51,30 +52,30 @@ export default function App() {
         </Form>
       </div>
       <nav>
-        {contacts.length ? (
+        { contacts.length ? (
           <ul>
-            {contacts.map((contact) => (
-              <li key={contact.id}>
-                <Link to={`contacts/${contact.id}`}>
-                  {contact.first || contact.last ? (
+            { contacts.map((contact) => (
+              <li key={ contact.id }>
+                <Link to={ `contacts/${ contact.id }` }>
+                  { contact.first || contact.last ? (
                     <>
-                      {contact.first} {contact.last}
+                      { contact.first } { contact.last }
                     </>
                   ) : (
                     <i>No Name</i>
-                  )}{" "}
-                  {contact.favorite ? (
+                  ) }{ ' ' }
+                  { contact.favorite ? (
                     <span>★</span>
-                  ) : null}
+                  ) : null }
                 </Link>
               </li>
-            ))}
+            )) }
           </ul>
         ) : (
           <p>
             <i>No contacts</i>
           </p>
-        )}
+        ) }
       </nav>
     </div>
 
@@ -86,5 +87,5 @@ export default function App() {
     <Scripts/>
     </body>
     </html>
-  );
+  )
 }
