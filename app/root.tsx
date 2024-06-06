@@ -8,10 +8,26 @@ export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: appStylesHref }
 ]
 
-import { getContacts } from '../data'
+import { FhirService } from './services'
+import { Configuration } from '~/Configuration'
 
 export const loader = async () => {
-  const contacts = await getContacts()
+  const config: Configuration = {
+    api: {
+      wholegrain: {
+        // todo: add env mapping for the url
+        url: ''
+      }
+    }
+  }
+
+  const fhirService = new FhirService(config)
+
+  // todo: remove
+  // const contacts = await getContacts()
+
+  const contacts = await fhirService.findIngredient()
+
   return json({ contacts })
 }
 
@@ -57,16 +73,16 @@ export default function App () {
             { contacts.map((contact) => (
               <li key={ contact.id }>
                 <Link to={ `contacts/${ contact.id }` }>
-                  { contact.first || contact.last ? (
-                    <>
-                      { contact.first } { contact.last }
-                    </>
-                  ) : (
-                    <i>No Name</i>
-                  ) }{ ' ' }
-                  { contact.favorite ? (
-                    <span>★</span>
-                  ) : null }
+                  {/*{ contact.first || contact.last ? (*/}
+                  {/*  <>*/}
+                  {/*    { contact.first } { contact.last }*/}
+                  {/*  </>*/}
+                  {/*) : (*/}
+                  {/*  <i>No Name</i>*/}
+                  {/*) }{ ' ' }*/}
+                  {/*{ contact.favorite ? (*/}
+                  {/*  <span>★</span>*/}
+                  {/*) : null }*/}
                 </Link>
               </li>
             )) }
