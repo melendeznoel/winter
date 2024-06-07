@@ -26,7 +26,7 @@ export const loader = async () => {
   // todo: remove
   // const contacts = await getContacts()
 
-  const contacts = await fhirService.findIngredient()
+  const contacts = await fhirService.findNutritionProduct()
 
   return json({ contacts })
 }
@@ -73,16 +73,16 @@ export default function App () {
             { contacts.map((contact) => (
               <li key={ contact.id }>
                 <Link to={ `contacts/${ contact.id }` }>
-                  {/*{ contact.first || contact.last ? (*/}
-                  {/*  <>*/}
-                  {/*    { contact.first } { contact.last }*/}
-                  {/*  </>*/}
-                  {/*) : (*/}
-                  {/*  <i>No Name</i>*/}
-                  {/*) }{ ' ' }*/}
-                  {/*{ contact.favorite ? (*/}
-                  {/*  <span>★</span>*/}
-                  {/*) : null }*/}
+                  { contact.resourceType ? (
+                    <>
+                      { contact.resourceType }
+                    </>
+                  ) : (
+                    <i>No Name</i>
+                  ) }{ ' ' }
+                  { contact.status ? (
+                    <span>★</span>
+                  ) : null }
                 </Link>
               </li>
             )) }
