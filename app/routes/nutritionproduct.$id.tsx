@@ -1,29 +1,36 @@
 import React from 'react'
 import { Form, useLoaderData } from '@remix-run/react'
-import type { FunctionComponent } from 'react'
-import { json } from '@remix-run/node'
-import { type ContactRecord, FhirService } from '../services'
-import { Configuration } from '~/Configuration'
+// import type { FunctionComponent } from 'react'
+import { json, type LoaderFunctionArgs } from '@remix-run/node'
+import { FhirService } from '../services'
+import { Configuration } from '../Configuration'
 import avocadoAvatar from '../avocado.jpg'
+import { get, isNil } from 'lodash'
+import invariant from 'tiny-invariant'
 
-export const loader = async ({ params }) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const config: Configuration = {
     api: {
       wholegrain: {
-        // todo: add env mapping for the url
-        url: ''
+        url: process.env.REACT_APP_WHOLEGRAIN_API_URL
       }
     }
   }
 
   const fhirService = new FhirService(config)
 
-  const nutritionProduct = await fhirService.getNutritionProduct(params.contactId)
+  const nutritionProductId = get(params, 'id')
 
-  return json({nutritionProduct})
+  invariant(nutritionProductId, 'missing id param')
+
+  const nutritionProduct = await fhirService.getNutritionProduct(nutritionProductId)
+
+  if (isNil(nutritionProduct)) throw new Response('Not Found', { status: 404 })
+
+  return json({ nutritionProduct })
 }
 
-export default function Contact () {
+export default function NutritionProduct () {
   const { nutritionProduct } = useLoaderData<typeof loader>()
 
   return (
@@ -45,7 +52,7 @@ export default function Contact () {
           ) : (
             <i>No Name</i>
           ) }{ ' ' }
-          {/*<Favorite contact={ nutritionProduct }/>*/}
+          {/*{<Favorite contact={ nutritionProduct }/> }*/}
         </h1>
 
         { nutritionProduct?.resourceType ? (
@@ -58,7 +65,7 @@ export default function Contact () {
           </p>
         ) : null }
 
-        {/*{ nutritionProduct.notes ? <p>{ nutritionProduct.notes }</p> : null }*/}
+        {/*{ nutritionProduct.notes ? <p>{ nutritionProduct.notes }</p> : null }*/ }
 
         <div>
           <Form action="edit">
@@ -85,24 +92,23 @@ export default function Contact () {
   )
 }
 
-const Favorite: FunctionComponent<{
-  contact: Pick<ContactRecord, 'favorite'>;
-}> = ({ contact }) => {
-  const favorite = contact.favorite
-
-  return (
-    <Form method="post">
-      <button
-        aria-label={
-          favorite
-            ? 'Remove from favorites'
-            : 'Add to favorites'
-        }
-        name="favorite"
-        value={ favorite ? 'false' : 'true' }
-      >
-        { favorite ? '★' : '☆' }
-      </button>
-    </Form>
-  )
-}
+// todo: update mapping
+// const Favorite: FunctionComponent<{ contact: Pick<Record<string, unknown>, 'favorite'>; }> = ({ contact }) => {
+//   const favorite = contact.favorite
+//
+//   return (
+//     <Form method="post">
+//       <button
+//         aria-label={
+//           favorite
+//             ? 'Remove from favorites'
+//             : 'Add to favorites'
+//         }
+//         name="favorite"
+//         value={ favorite ? 'false' : 'true' }
+//       >
+//         { favorite ? '★' : '☆' }
+//       </button>
+//     </Form>
+//   )
+// }

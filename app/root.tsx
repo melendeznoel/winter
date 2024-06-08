@@ -1,34 +1,41 @@
 import React from 'react'
 import { type LinksFunction, json } from '@remix-run/node'
 import { Form, Links, Meta, Scripts, ScrollRestoration, Outlet, Link, useLoaderData } from '@remix-run/react'
-
+import { FhirService } from './services'
+import { Configuration } from '~/Configuration'
+import { FhirNutritionProduct } from '~/types'
 import appStylesHref from './app.css?url'
+
+let contacts: FhirNutritionProduct[] = []
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: appStylesHref }
 ]
 
-import { FhirService } from './services'
-import { Configuration } from '~/Configuration'
-
 export const loader = async () => {
   const config: Configuration = {
     api: {
       wholegrain: {
-        // todo: add env mapping for the url
-        url: ''
+        url: process.env.REACT_APP_WHOLEGRAIN_API_URL
       }
     }
   }
 
   const fhirService = new FhirService(config)
 
-  // todo: remove
-  // const contacts = await getContacts()
-
-  const contacts = await fhirService.findNutritionProduct()
+  contacts = await fhirService.findNutritionProduct()
 
   return json({ contacts })
+}
+
+export const action = async () =>{
+  const nutritionProduct: Partial<FhirNutritionProduct> = {
+    resourceType: 'NutritionProduct'
+  }
+
+  contacts.push(nutritionProduct as FhirNutritionProduct)
+
+  return json({ nutritionProduct })
 }
 
 export default function App () {
@@ -72,7 +79,7 @@ export default function App () {
           <ul>
             { contacts.map((contact) => (
               <li key={ contact.id }>
-                <Link to={ `contacts/${ contact.id }` }>
+                <Link to={ `nutritionproduct/${ contact.id }` }>
                   { contact.resourceType ? (
                     <>
                       { contact.resourceType }
