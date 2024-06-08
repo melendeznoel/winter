@@ -1,6 +1,6 @@
 import { logIt } from '../tools'
 import { type Configuration } from '~/Configuration'
-import { get, isNil } from 'lodash'
+import { get, isNil, find } from 'lodash'
 import { FhirNutritionProduct } from '../types'
 
 
@@ -23,5 +23,13 @@ export class FhirService {
     logIt('Search Results for Nutrition Product')
 
     return isNil(NutritionProduct) ? [] : [NutritionProduct]
+  }
+
+  public async getNutritionProduct (id: string): Promise<FhirNutritionProduct|undefined> {
+    const nutritionProducts = await this.findNutritionProduct()
+
+    const result = find(nutritionProducts, { id })
+
+    return result
   }
 }

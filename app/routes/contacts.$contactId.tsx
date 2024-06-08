@@ -1,52 +1,64 @@
 import React from 'react'
-import { Form } from '@remix-run/react'
+import { Form, useLoaderData } from '@remix-run/react'
 import type { FunctionComponent } from 'react'
+import { json } from '@remix-run/node'
+import { type ContactRecord, FhirService } from '../services'
+import { Configuration } from '~/Configuration'
+import avocadoAvatar from '../avocado.jpg'
 
-import { type ContactRecord } from '../services'
+export const loader = async ({ params }) => {
+  const config: Configuration = {
+    api: {
+      wholegrain: {
+        // todo: add env mapping for the url
+        url: ''
+      }
+    }
+  }
+
+  const fhirService = new FhirService(config)
+
+  const nutritionProduct = await fhirService.getNutritionProduct(params.contactId)
+
+  return json({nutritionProduct})
+}
 
 export default function Contact () {
-  const contact = {
-    first: 'Your',
-    last: 'Name',
-    avatar: 'https://placekitten.com/g/200/200',
-    twitter: 'your_handle',
-    notes: 'Some notes',
-    favorite: true
-  }
+  const { nutritionProduct } = useLoaderData<typeof loader>()
 
   return (
     <div id="contact">
       <div>
         <img
-          alt={ `${ contact.first } ${ contact.last } avatar` }
-          key={ contact.avatar }
-          src={ contact.avatar }
+          alt={ `${ nutritionProduct?.resourceType } avatar` }
+          key={ nutritionProduct?.id }
+          src={ avocadoAvatar }
         />
       </div>
 
       <div>
         <h1>
-          { contact.first || contact.last ? (
+          { nutritionProduct?.resourceType ? (
             <>
-              { contact.first } { contact.last }
+              { nutritionProduct.resourceType }
             </>
           ) : (
             <i>No Name</i>
           ) }{ ' ' }
-          <Favorite contact={ contact }/>
+          {/*<Favorite contact={ nutritionProduct }/>*/}
         </h1>
 
-        { contact.twitter ? (
+        { nutritionProduct?.resourceType ? (
           <p>
             <a
-              href={ `https://twitter.com/${ contact.twitter }` }
+              href={ `https://www.hl7.org/fhir/${ nutritionProduct?.resourceType }.html` }
             >
-              { contact.twitter }
+              { nutritionProduct.resourceType }
             </a>
           </p>
         ) : null }
 
-        { contact.notes ? <p>{ contact.notes }</p> : null }
+        {/*{ nutritionProduct.notes ? <p>{ nutritionProduct.notes }</p> : null }*/}
 
         <div>
           <Form action="edit">
