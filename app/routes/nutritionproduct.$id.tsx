@@ -34,7 +34,7 @@ export default function NutritionProduct () {
   const { nutritionProduct } = useLoaderData<typeof loader>()
 
   return (
-    <div id="contact">
+    <div id="nutrition-product">
       <div>
         <img
           alt={ `${ nutritionProduct?.resourceType } avatar` }
@@ -45,9 +45,9 @@ export default function NutritionProduct () {
 
       <div>
         <h1>
-          { nutritionProduct?.resourceType ? (
+          { nutritionProduct?.code?.text ? (
             <>
-              { nutritionProduct.resourceType }
+              { nutritionProduct.code.text }
             </>
           ) : (
             <i>No Name</i>
@@ -65,7 +65,7 @@ export default function NutritionProduct () {
           </p>
         ) : null }
 
-        {/*{ nutritionProduct.notes ? <p>{ nutritionProduct.notes }</p> : null }*/ }
+        {/*{ nutritionProduct.category ? <p>{ nutritionProduct.category[1].text }</p> : null }*/ }
 
         <div>
           <Form action="edit">

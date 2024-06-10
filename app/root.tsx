@@ -6,7 +6,7 @@ import { Configuration } from '~/Configuration'
 import { FhirNutritionProduct } from '~/types'
 import appStylesHref from './app.css?url'
 
-let contacts: FhirNutritionProduct[] = []
+let nutritionProducts: FhirNutritionProduct[] = []
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: appStylesHref }
@@ -23,23 +23,23 @@ export const loader = async () => {
 
   const fhirService = new FhirService(config)
 
-  contacts = await fhirService.findNutritionProduct()
+  nutritionProducts = await fhirService.findNutritionProduct()
 
-  return json({ contacts })
+  return json({ nutritionProducts })
 }
 
-export const action = async () =>{
+export const action = async () => {
   const nutritionProduct: Partial<FhirNutritionProduct> = {
     resourceType: 'NutritionProduct'
   }
 
-  contacts.push(nutritionProduct as FhirNutritionProduct)
+  nutritionProducts.push(nutritionProduct as FhirNutritionProduct)
 
   return json({ nutritionProduct })
 }
 
 export default function App () {
-  const { contacts } = useLoaderData<typeof loader>()
+  const { nutritionProducts } = useLoaderData<typeof loader>()
 
   return (
     <html lang="en">
@@ -75,19 +75,19 @@ export default function App () {
         </Form>
       </div>
       <nav>
-        { contacts.length ? (
+        { nutritionProducts.length ? (
           <ul>
-            { contacts.map((contact) => (
-              <li key={ contact.id }>
-                <Link to={ `nutritionproduct/${ contact.id }` }>
-                  { contact.resourceType ? (
+            { nutritionProducts.map((nutritionProductsItem) => (
+              <li key={ nutritionProductsItem.id }>
+                <Link to={ `nutritionproduct/${ nutritionProductsItem.id }` }>
+                  { nutritionProductsItem.code.text ? (
                     <>
-                      { contact.resourceType }
+                      { nutritionProductsItem.code.text }
                     </>
                   ) : (
                     <i>No Name</i>
                   ) }{ ' ' }
-                  { contact.status ? (
+                  { nutritionProductsItem.status ? (
                     <span>★</span>
                   ) : null }
                 </Link>

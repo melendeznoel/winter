@@ -13,7 +13,7 @@ export class FhirService {
 
     const apiUrl = get(this.config, 'api.wholegrain.url') ?? ''
 
-    const NutritionProduct = await fetch(`${ apiUrl }/nutritionproduct/_search`, { method: 'POST' })
+    const nutritionProducts = await fetch(`${ apiUrl }/nutritionproduct/_search`, { method: 'POST' })
       .then((response) => response.json())
       .catch(reason => {
         logIt('Fetching ingredients from API throw an error')
@@ -22,7 +22,7 @@ export class FhirService {
 
     logIt('Search Results for Nutrition Product')
 
-    return isNil(NutritionProduct) ? [] : [NutritionProduct]
+    return isNil(nutritionProducts) ? [] : nutritionProducts
   }
 
   public async getNutritionProduct (id: string): Promise<FhirNutritionProduct|undefined> {

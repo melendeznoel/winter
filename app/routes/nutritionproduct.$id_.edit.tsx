@@ -5,6 +5,7 @@ import { Form, useLoaderData } from '@remix-run/react'
 import invariant from 'tiny-invariant'
 import { FhirService } from '../services'
 import { Configuration } from '~/Configuration'
+import {logIt} from '../tools'
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   invariant(params.id, 'Missing contactId param')
@@ -31,8 +32,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 export default function EditNutritionProduct () {
   const { nutritionProduct } = useLoaderData<typeof loader>()
 
+  const handleChange = (event: unknown) => {
+    logIt('Status Changed')
+  }
+
   return (
-    <Form key={ nutritionProduct.id } id="contact-form" method="post">
+    <Form key={ nutritionProduct.id } id="nutrition-product-form" method="post">
       <p>
         <span>Name</span>
         <input
@@ -77,6 +82,15 @@ export default function EditNutritionProduct () {
       {/*    rows={ 6 }*/}
       {/*  />*/}
       {/*</label>*/}
+
+      <label>
+        Status
+        <select value={ nutritionProduct.status } onChange={ handleChange }>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="EnteredInError">Entered-In-Error</option>
+        </select>
+      </label>
       <p>
         <button type="submit">Save</button>
         <button type="button">Cancel</button>
