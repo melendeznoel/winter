@@ -32,67 +32,22 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 export default function EditNutritionProduct () {
   const { nutritionProduct } = useLoaderData<typeof loader>()
 
-  const handleChange = (event: unknown) => {
-    logIt('Status Changed')
+  const handleChange = (event: React.ChangeEvent) => {
+    console.info(event)
   }
 
   return (
     <Form key={ nutritionProduct.id } id="nutrition-product-form" method="post">
-      <p>
-        <span>Name</span>
-        <input
-          defaultValue={ nutritionProduct.text.status }
-          aria-label="First name"
-          name="first"
-          type="text"
-          placeholder="First"
-        />
-        {/*<input*/}
-        {/*  aria-label="Last name"*/}
-        {/*  defaultValue={ nutritionProduct.last }*/}
-        {/*  name="last"*/}
-        {/*  placeholder="Last"*/}
-        {/*  type="text"*/}
-        {/*/>*/}
-      </p>
-      {/*<label>*/}
-      {/*  <span>Twitter</span>*/}
-      {/*  <input*/}
-      {/*    defaultValue={ nutritionProduct.twitter }*/}
-      {/*    name="twitter"*/}
-      {/*    placeholder="@jack"*/}
-      {/*    type="text"*/}
-      {/*  />*/}
-      {/*</label>*/}
-      {/*<label>*/}
-      {/*  <span>Avatar URL</span>*/}
-      {/*  <input*/}
-      {/*    aria-label="Avatar URL"*/}
-      {/*    defaultValue={ nutritionProduct.avatar }*/}
-      {/*    name="avatar"*/}
-      {/*    placeholder="https://example.com/avatar.jpg"*/}
-      {/*    type="text"*/}
-      {/*  />*/}
-      {/*</label>*/}
-      {/*<label>*/}
-      {/*  <span>Notes</span>*/}
-      {/*  <textarea*/}
-      {/*    defaultValue={ nutritionProduct.notes }*/}
-      {/*    name="notes"*/}
-      {/*    rows={ 6 }*/}
-      {/*  />*/}
-      {/*</label>*/}
-
       <label>
-        Status
-        <select value={ nutritionProduct.status } onChange={ handleChange }>
+        <span>Status</span>
+        <select name='status' id='status-select' value={ nutritionProduct.status } onChange={e => handleChange(e) }>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
           <option value="EnteredInError">Entered-In-Error</option>
         </select>
       </label>
       <p>
-        <button type="submit">Save</button>
+      <button type="submit">Save</button>
         <button type="button">Cancel</button>
       </p>
     </Form>
