@@ -1,22 +1,45 @@
 import React from 'react'
 import { type LinksFunction, json } from '@remix-run/node'
 import { Form, Links, Meta, Scripts, ScrollRestoration, Outlet, Link, useLoaderData } from '@remix-run/react'
-
+import { FhirService } from './services'
+import { Configuration } from '~/Configuration'
+import { FhirNutritionProduct } from '~/types'
 import appStylesHref from './app.css?url'
+
+let nutritionProducts: FhirNutritionProduct[] = []
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: appStylesHref }
 ]
 
-import { getContacts } from '../data'
-
 export const loader = async () => {
-  const contacts = await getContacts()
-  return json({ contacts })
+  const config: Configuration = {
+    api: {
+      wholegrain: {
+        url: process.env.REACT_APP_WHOLEGRAIN_API_URL
+      }
+    }
+  }
+
+  const fhirService = new FhirService(config)
+
+  nutritionProducts = await fhirService.findNutritionProduct()
+
+  return json({ nutritionProducts })
+}
+
+export const action = async () => {
+  const nutritionProduct: Partial<FhirNutritionProduct> = {
+    resourceType: 'NutritionProduct'
+  }
+
+  nutritionProducts.push(nutritionProduct as FhirNutritionProduct)
+
+  return json({ nutritionProduct })
 }
 
 export default function App () {
-  const { contacts } = useLoaderData<typeof loader>()
+  const { nutritionProducts } = useLoaderData<typeof loader>()
 
   return (
     <html lang="en">
@@ -52,19 +75,19 @@ export default function App () {
         </Form>
       </div>
       <nav>
-        { contacts.length ? (
+        { nutritionProducts.length ? (
           <ul>
-            { contacts.map((contact) => (
-              <li key={ contact.id }>
-                <Link to={ `contacts/${ contact.id }` }>
-                  { contact.first || contact.last ? (
+            { nutritionProducts.map((nutritionProductsItem) => (
+              <li key={ nutritionProductsItem.id }>
+                <Link to={ `nutritionproduct/${ nutritionProductsItem.id }` }>
+                  { nutritionProductsItem.code.text ? (
                     <>
-                      { contact.first } { contact.last }
+                      { nutritionProductsItem.code.text }
                     </>
                   ) : (
                     <i>No Name</i>
                   ) }{ ' ' }
-                  { contact.favorite ? (
+                  { nutritionProductsItem.status ? (
                     <span>★</span>
                   ) : null }
                 </Link>
